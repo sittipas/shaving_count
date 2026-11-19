@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#0a1628">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>BladeTrack</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪒</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app">
+    <!-- Header -->
+    <header class="header">
+      <button class="btn-icon" id="resetToggle" aria-label="Reset data" title="Reset Counter">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+          <path d="M3 3v5h5"/>
+        </svg>
+      </button>
+      <h1 class="logo">Blade Tracking</h1>
+      <button class="btn-icon" id="historyToggle" aria-label="View history" title="Blade History">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <polyline points="12 6 12 12 16 14"/>
+        </svg>
+      </button>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+      <!-- Usage info label -->
+      <div class="intake-label">Today's usage</div>
+
+      <!-- Big count display -->
+      <div class="count-display">
+        <span class="count-number" id="currentCount">0</span>
+        <span class="count-unit">shaves</span>
+      </div>
+      <div class="count-subtitle">of <span id="maxShaves">30</span> shaves</div>
+
+      <!-- 3D Blade Container -->
+      <div class="blade-3d-container" id="blade3dContainer">
+        <!-- Three.js canvas will be inserted here -->
+      </div>
+
+      <!-- Shave Button -->
+      <button class="btn-shave" id="shaveBtn">
+        <span class="btn-shave__glow"></span>
+        <span class="btn-shave__text">LOG SHAVE</span>
+      </button>
+
+      <!-- History Items (inline below button) -->
+      <div class="history-inline" id="historyInline">
+        <!-- Populated by JS -->
+      </div>
+
+      <!-- Quick Stats -->
+      <div class="stats">
+        <div class="stat-card">
+          <span class="stat-value" id="remainingCount">30</span>
+          <span class="stat-label">Remaining</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-value" id="totalBlades">0</span>
+          <span class="stat-label">Blades Used</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-value" id="totalShaves">0</span>
+          <span class="stat-label">Total Shaves</span>
+        </div>
+      </div>
+    </main>
+
+    <!-- Reset Modal -->
+    <div class="modal-overlay" id="resetModal">
+      <div class="modal">
+        <div class="modal-icon">🔄</div>
+        <h2 class="modal-title">Reset Shave Data</h2>
+        <p class="modal-text">What would you like to reset?</p>
+        <button class="btn-modal-action btn-reset-blade" id="confirmResetBladeBtn">Reset Current Blade to 0</button>
+        <button class="btn-modal-action btn-reset-all" id="confirmResetAllBtn">Reset All Data &amp; History</button>
+        <button class="btn-dismiss" id="dismissResetBtn">Cancel</button>
+      </div>
+    </div>
+
+    <!-- Replace Blade Modal -->
+    <div class="modal-overlay" id="replaceModal">
+      <div class="modal">
+        <div class="modal-icon">🪒✨</div>
+        <h2 class="modal-title">Time for a new blade!</h2>
+        <p class="modal-text">You've completed <span id="modalMaxShaves">30</span> shaves with this blade. Replace it for the best shave.</p>
+        <button class="btn-replace" id="replaceBtn">Replace Blade</button>
+        <button class="btn-dismiss" id="dismissBtn">Keep Using</button>
+      </div>
+    </div>
+
+    <!-- History Panel -->
+    <div class="history-panel" id="historyPanel">
+      <div class="history-header">
+        <h2>Blade History</h2>
+        <button class="btn-icon" id="historyClose" aria-label="Close history">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div class="history-list" id="historyList">
+        <!-- Populated by JS -->
+      </div>
+      <div class="history-footer">
+        <button class="btn-danger" id="resetBtn">Reset All Data</button>
+      </div>
+    </div>
+
+    <!-- Settings Sheet -->
+    <div class="settings-sheet" id="settingsSheet">
+      <div class="settings-handle"></div>
+      <div class="settings-content">
+        <label class="settings-label" for="maxInput">Shaves per blade</label>
+        <div class="settings-input-group">
+          <button class="btn-adjust" id="decreaseMax">−</button>
+          <input type="number" id="maxInput" class="settings-input" value="30" min="1" max="99">
+          <button class="btn-adjust" id="increaseMax">+</button>
+        </div>
+      </div>
+      <div class="settings-actions">
+        <button class="btn-sheet-reset" id="sheetResetBladeBtn">Reset Current Blade (0 shaves)</button>
+        <button class="btn-sheet-reset danger" id="sheetResetAllBtn">Reset All Lifetime Data</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">
+    <span class="toast-text" id="toastText"></span>
+  </div>
+
+  <!-- Three.js from CDN with fallback -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script>
+    if (typeof THREE === 'undefined') {
+      document.write('<script src="https://unpkg.com/three@0.128.0/build/three.min.js"><\/script>');
+    }
+  </script>
+  <script src="app.js"></script>
+</body>
+</html>
